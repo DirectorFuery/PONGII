@@ -4,10 +4,10 @@ import java.time.temporal.ChronoUnit;
 import javax.swing.*;
 import java.awt.*;
 
-import Entities.AIPaddle;
-import Entities.Paddle;
 import Entities.Pitch;
 import Entities.Puck;
+import Entities.Paddles.AIPaddle;
+import Entities.Paddles.PlayerPaddle;
 import Utils.FrameRateCapper;
 
 public class Controller {
@@ -15,13 +15,16 @@ public class Controller {
     private int fieldWidth = 79;
     private int fieldHeight = 21;
 
-    private FrameRateCapper frameRateCapper = new FrameRateCapper(60);
+    private FrameRateCapper frameRateCapper = new FrameRateCapper(5);
     private Pitch pitch = new Pitch(fieldWidth, fieldHeight);
     private Puck puck = new Puck(ballChar, fieldWidth, fieldHeight, 5, 3);
 
-    private AIPaddle aiPaddle = new AIPaddle(5, 2, fieldHeight, '>', 0.18);
+    private AIPaddle aiPaddle = new AIPaddle(5, 2, fieldHeight, '}', 0.25);
+    private PlayerPaddle playerPaddle = new PlayerPaddle(5, fieldWidth - 3, fieldHeight, '{', 0.18);
 
-    private JFrame output = new JFrame("TableHocii");
+    private InputController inputController = new InputController();
+
+    private JFrame output = new JFrame("PONGII");
     private JLabel pitchDisplay = new JLabel();
 
     String[] pitchBase = this.pitch.RenderPitch();
@@ -37,12 +40,21 @@ public class Controller {
         this.output.setVisible(true);
         // Set default close operation
         this.output.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        // Prepare key listeners
+        this.inputController.bindPlayerPaddle(playerPaddle);
+        this.output.addKeyListener(inputController);
     }
 
     private void RenderFrame() {
         String[] renderedPitch = this.pitchBase.clone();
-        renderedPitch = this.puck.renderToPitch(renderedPitch);
-        this.aiPaddle.renderToPitch(renderedPitch);
+        try {
+            this.aiPaddle.renderToPitch(renderedPitch);
+            this.playerPaddle.renderToPitch(renderedPitch);
+            this.puck.renderToPitch(renderedPitch);
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
         
         this.pitchDisplay.setText("<html><pre>" + String.join("", renderedPitch) + "</pre></html>");
     }
@@ -53,6 +65,8 @@ public class Controller {
         long endex = LocalDateTime.now().plus(1, ChronoUnit.MINUTES).toEpochSecond(java.time.ZoneOffset.UTC);
 
         this.aiPaddle.bindPuck(this.puck);
+        this.puck.bindPaddle(this.aiPaddle);
+        this.puck.bindPaddle(this.playerPaddle);
         this.puck.start();
 
         while (LocalDateTime.now().toEpochSecond(java.time.ZoneOffset.UTC) < endex) {
@@ -60,8 +74,9 @@ public class Controller {
                 continue;
             }
 
-            this.puck.update();
             this.aiPaddle.update();
+            this.playerPaddle.update();
+            this.puck.update();
 
             RenderFrame();
         }

@@ -1,5 +1,7 @@
 package Entities;
 
+import Entities.Paddles.*;
+
 import Utils.Position;
 import Utils.Vector2;
 import Utils.Statics;
@@ -9,16 +11,19 @@ public class Puck {
     public int width;
     public int height;
 
+    public char ballChar;
+
     private Vector2 movementVector = new Vector2();
     private int minXPos = 0;
     private int maxXPos;
     private int minYPos = 0;
     private int maxYPos;
 
-    public char ballChar;
-
     private int heightMid;
     private int widthMid;
+
+    private AIPaddle aiPaddleRef;
+    private PlayerPaddle playerPaddleRef;
 
     public Puck(char ballChar, int fieldWidth, int fieldHeight, int width, int height){
         this.position.x = Statics.getHalfPointOfOddNumber(fieldWidth);
@@ -50,28 +55,47 @@ public class Puck {
 
         // check x collisions
         if (collisions[0] || collisions[1]) {
-            this.movementVector.invertX();
+            //this.movementVector.invertX(); // SCORE
+            //this.movementVector.setMagnitude(0);
         }
         
         // check y collisions
         if (collisions[2] || collisions[3]) {
             this.movementVector.invertY();
         }
+
+        // check paddle collisions
+        if (collisions[4] || collisions[5]) {
+            this.movementVector.invertX();
+            System.out.println("boing");
+        }
     }
 
+    public void bindPaddle(AIPaddle paddle) {
+        this.aiPaddleRef = paddle;
+    }
+
+    public void bindPaddle(PlayerPaddle paddle) {
+        this.playerPaddleRef = paddle;
+    }
+
+    /* 
+    *[Left, Right, Top, Bottom, aiPaddle, playerPaddel] 
+    */
     public boolean[] checkCollisions() {
-        // [xMin, xMax, yMin, yMax]
-        boolean[] collisions = new boolean[]{false, false, false, false};
+        boolean[] collisions = new boolean[]{false, false, false, false, false, false};
 
         collisions[0] = this.position.x <= this.minXPos;
         collisions[1] = this.position.x >= this.maxXPos;
         collisions[2] = this.position.y <= this.minYPos;
         collisions[3] = this.position.y >= this.maxYPos;
+        collisions[4] = this.position.x <= this.aiPaddleRef.position.x + (this.widthMid - 1) && this.movementVector.getX() < 0;
+        collisions[5] = this.position.x >= this.playerPaddleRef.position.x - (this.widthMid - 1) && this.movementVector.getX() > 0;
 
         return collisions;
     }
 
-    public String[] renderToPitch(String[] pitch) {
+    public void renderToPitch(String[] pitch) {
         for (int i = 1; i <= this.height; i++) {
             int currentDrawWidth = 0;
 
@@ -104,7 +128,5 @@ public class Puck {
             // store line in var
             pitch[drawYStart + i] = lineBuilder.toString();
         }
-
-        return pitch;
     }
 }

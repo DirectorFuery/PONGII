@@ -69,6 +69,14 @@ public class Vector2 {
         return new double[]{Math.cos(this.angle), Math.sin(this.angle)};
     }
 
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
     public double getXAsRadians() {
         return Math.acos(this.x);
     }

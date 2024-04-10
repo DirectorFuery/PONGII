@@ -1,4 +1,6 @@
-package Entities;
+package Entities.Paddles;
+
+import Entities.Puck;
 
 public class AIPaddle extends Paddle {
     public double paddleMoveSpeed;

@@ -1,4 +1,4 @@
-package Entities;
+package Entities.Paddles;
 
 import Utils.Position;
 import Utils.Statics;
