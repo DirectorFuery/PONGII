@@ -40,7 +40,7 @@ public class Puck {
         this.minXPos = 1 + this.widthMid;
         this.maxXPos = fieldWidth - this.widthMid;
         this.minYPos = 1 + this.heightMid;  // top of pitch
-        this.maxYPos = 1 + fieldHeight - this.heightMid;
+        this.maxYPos = fieldHeight - this.heightMid;
     }
 
     public void start() {
@@ -55,8 +55,8 @@ public class Puck {
 
         // check x collisions
         if (collisions[0] || collisions[1]) {
-            //this.movementVector.invertX(); // SCORE
-            //this.movementVector.setMagnitude(0);
+            // SCORE
+            this.movementVector.setMagnitude(0);
         }
         
         // check y collisions
@@ -67,7 +67,6 @@ public class Puck {
         // check paddle collisions
         if (collisions[4] || collisions[5]) {
             this.movementVector.invertX();
-            System.out.println("boing");
         }
     }
 
@@ -85,12 +84,19 @@ public class Puck {
     public boolean[] checkCollisions() {
         boolean[] collisions = new boolean[]{false, false, false, false, false, false};
 
+        boolean checkAIPaddle = this.position.x <= this.aiPaddleRef.position.x + (this.widthMid) + 1;
+        boolean checkPlayerPaddle =this.position.x >= this.playerPaddleRef.position.x - (this.widthMid - 1);
+
         collisions[0] = this.position.x <= this.minXPos;
         collisions[1] = this.position.x >= this.maxXPos;
         collisions[2] = this.position.y <= this.minYPos;
         collisions[3] = this.position.y >= this.maxYPos;
-        collisions[4] = this.position.x <= this.aiPaddleRef.position.x + (this.widthMid - 1) && this.movementVector.getX() < 0;
-        collisions[5] = this.position.x >= this.playerPaddleRef.position.x - (this.widthMid - 1) && this.movementVector.getX() > 0;
+
+        if (checkAIPaddle) {
+            collisions[4] = Math.abs(this.position.y - this.aiPaddleRef.position.y) < (this.aiPaddleRef.heightMid - 1);
+        } else if (checkPlayerPaddle) {
+            collisions[5] = Math.abs(this.position.y - this.playerPaddleRef.position.y) < (this.playerPaddleRef.heightMid - 1);
+        }
 
         return collisions;
     }

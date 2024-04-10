@@ -10,7 +10,7 @@ public class Paddle {
 
     protected int maxYPosition;
     protected int minYPosition;
-    protected int heightMid;
+    public int heightMid;
 
     public Paddle(int height, int columnPosition, int fieldHeight, char paddleChar) {
         this.height = height;
@@ -19,7 +19,7 @@ public class Paddle {
 
         this.paddleChar = paddleChar;
 
-        this.minYPosition = this.heightMid;
+        this.minYPosition = this.heightMid + 2;
         this.maxYPosition = fieldHeight - this.heightMid;
     }
 

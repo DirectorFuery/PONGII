@@ -15,11 +15,11 @@ public class Controller {
     private int fieldWidth = 79;
     private int fieldHeight = 21;
 
-    private FrameRateCapper frameRateCapper = new FrameRateCapper(5);
+    private FrameRateCapper frameRateCapper = new FrameRateCapper(60);
     private Pitch pitch = new Pitch(fieldWidth, fieldHeight);
     private Puck puck = new Puck(ballChar, fieldWidth, fieldHeight, 5, 3);
 
-    private AIPaddle aiPaddle = new AIPaddle(5, 2, fieldHeight, '}', 0.25);
+    private AIPaddle aiPaddle = new AIPaddle(5, 2, fieldHeight, '}', 0.18);
     private PlayerPaddle playerPaddle = new PlayerPaddle(5, fieldWidth - 3, fieldHeight, '{', 0.18);
 
     private InputController inputController = new InputController();
